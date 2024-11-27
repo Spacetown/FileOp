@@ -8,7 +8,8 @@
 		"vscode": {
 			"extensions": [
 				"seunlanlege.action-buttons",
-				"streetsidesoftware.code-spell-checker"
+				"streetsidesoftware.code-spell-checker",
+				"EditorConfig.EditorConfig"
 			]
 		}
 	}

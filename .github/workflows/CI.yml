@@ -11,6 +11,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
 
   spell-check:
@@ -21,5 +25,129 @@ jobs:
         run:
           npm install -g cspell@latest
       - name: Run spellchecker
+        run:
+          cspell --config cspell.json --color --show-suggestions '**'
+
+  container-build:
+    needs:
+      - spell-check
+    strategy:
+      fail-fast: false
+      matrix:
+        BuildType:
+          - Debug
+          - Release
+    runs-on: ubuntu-24.04
+    container:
+      image: debian:bookworm
+
+    steps:
+      - name: Install git
         run: |
-          cspell
+          export DEBIAN_FRONTEND=noninteractive
+          apt update
+          apt install -y git
+      - uses: actions/checkout@v4
+      - name: Install build tools
+        run: |
+          chown -R $(id -u):$(id -g) .
+          ./scripts/container.setup.sh
+
+      - name: Configure
+        run:
+          ./scripts/cmake.configure.sh -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }}
+      - name: Build
+        run:
+          ./scripts/cmake.build.sh
+
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-container${{ matrix.BuildType == 'Debug' && '-debug' || ''}}
+          path: build/FileOp.7z
+
+  build:
+    needs:
+      - spell-check
+    strategy:
+      fail-fast: false
+      matrix:
+        BuildType:
+          - Debug
+          - Release
+    runs-on: Windows-latest
+ 
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ninja
+        run:
+          choco install ninja
+      - name: Install gcovr
+        if: ${{ matrix.BuildType == 'Debug' }}
+        run:
+          pip install gcovr==8.2
+
+      - name: Configure
+        run:
+          ./scripts/cmake.configure.sh -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }}
+      - name: Build
+        run:
+          ./scripts/cmake.build.sh
+
+      - name: Run basic test
+        run: |
+          ./scripts/run_test.sh
+      - name: Run cat test
+        run: |
+          ./scripts/run_test_cat.sh
+      - name: Run copy test
+        run: |
+          ./scripts/run_test_copy.sh
+      - name: Run mkdir test
+        run: |
+          ./scripts/run_test_mkdir.sh
+      - name: Create coverage report
+        if: ${{ matrix.BuildType == 'Debug' }}
+        run: |
+          gcovr --filter src/ --exclude-noncode-lines build \
+            --txt coverage.txt \
+            --html-single-page --html-title "GCOVR report for $(git rev-parse HEAD)" --html-details coverage.html
+          cat coverage.txt
+      - name: Upload coverage report
+        if: ${{ matrix.BuildType == 'Debug' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.*
+
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-windows${{ matrix.BuildType == 'Debug' && '-debug' || ''}}
+          path: build/FileOp.7z
+
+  deploy:
+    needs:
+      - container-build
+      - build
+    runs-on: Windows-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: app-*
+      # cspell:ignore oapp
+      - name: Test container build
+        run: |
+          7z x -oapp-container app-container/FileOp.7z
+          ./app-container/FileOp.exe --help
+      - name: Test windows build
+        run: |
+          7z x -oapp-windows app-windows/FileOp.7z
+          ./app-windows/FileOp.exe --help
+      - name: Test windows build
+        run: |
+          7z x -oapp-windows-debug app-windows-debug/FileOp.7z
+          ./app-windows-debug/FileOp.exe --help
+
+

@@ -11,6 +11,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
 
   spell-check:
@@ -23,3 +27,69 @@ jobs:
       - name: Run spellchecker
         run: |
           cspell
+
+  container-build:
+    needs:
+      - spell-check
+    runs-on: ubuntu-latest
+    container:
+      image: debian:bookworm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build tools
+        run:
+          ./scripts/container.setup.sh
+      - name: Configure
+        run: |
+          ./scripts/cmake.configure.sh
+      - name: Build
+        run: |
+          ./scripts/cmake.build.sh
+      - name: Upload app
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-container
+          path: build/FileOp.exe
+
+  windows-build:
+    needs:
+      - spell-check
+    runs-on: Windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ninja
+        run: |
+          choco install ninja
+      - name: Configure
+        run: |
+          ./scripts/cmake.configure.sh
+      - name: Build
+        run: |
+          ./scripts/cmake.build.sh
+      - name: Test
+        run: |
+          build/FileOp.exe
+      - name: Upload app
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-windows
+          path: build/FileOp.exe
+
+  deploy:
+    needs:
+      - container-build
+      - windows-build
+    runs-on: Windows-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: app-*
+      - name: Test container build
+        run: |
+          ./app-container/FileOp.exe
+      - name: Test windows build
+        run: |
+          ./app-windows/FileOp.exe
+
+

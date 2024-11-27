@@ -1,0 +1,30 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"actionButtons": {
+			"commands": [
+				{
+					"name": "Configure",
+					"command": "./scripts/cmake.configure.sh"
+				},
+				{
+					"name": "Build",
+					"command": "./scripts/cmake.build.sh"
+				}
+			],
+			"defaultColor": "white",
+			"reloadButton": "↻",
+			"loadNpmCommands": false
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			"seunlanlege.action-buttons",
+			"streetsidesoftware.code-spell-checker"
+		]
+	}
+}

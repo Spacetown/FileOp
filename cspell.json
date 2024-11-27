@@ -10,8 +10,11 @@
     "dictionaries": [],
     "enableGlobDot": true,
     "words": [
+        "devcontainers"
     ],
     "ignoreWords": [
+        "noninteractive",
+        "seunlanlege"
     ],
     "ignoreRegExpList": [
         // GH actions

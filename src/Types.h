@@ -1,0 +1,27 @@
+
+#ifndef TYPES_INCLUDES
+# define TYPES_INCLUDES
+
+# define _UNICODE // use Unicode (Microsoft C run-time API)
+# define UNICODE  // use Unicode (Microsoft Windows API)
+# define _WIN32_WINNT _WIN32_WINNT_WINXP
+
+# include <tchar.h>
+# include <wchar.h>
+# include <windows.h>
+
+ //! Local boolean type.
+ typedef int tBool;
+ //! The local false value.
+ #define VALUE_FALSE (tBool)0
+ //! The local true value.
+ #define VALUE_TRUE (tBool)1
+
+ typedef struct {
+    const TCHAR id[ 10 ];
+    void (*printHelp)( void );
+    tBool (*run)( int argc, wchar_t *argv[] );
+ } tCommand;
+
+
+#endif

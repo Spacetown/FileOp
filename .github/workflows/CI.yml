@@ -11,6 +11,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
 
   spell-check:
@@ -21,5 +25,103 @@ jobs:
         run:
           npm install -g cspell@latest
       - name: Run spellchecker
+        run:
+          cspell --config cspell.json --color --show-suggestions '**'
+
+  container-build:
+    needs:
+      - spell-check
+    runs-on: ubuntu-24.04
+    container:
+      image: debian:bookworm
+    steps:
+      - name: Install git
         run: |
-          cspell
+          export DEBIAN_FRONTEND=noninteractive
+          apt update
+          apt install -y git
+      - uses: actions/checkout@v4
+      - name: Install build tools
+        run: |
+          chown -R $(id -u):$(id -g) .
+          ./scripts/container.setup.sh
+      - name: Configure (Release)
+        run:
+          ./scripts/cmake.configure.sh
+      - name: Build
+        run:
+          ./scripts/cmake.build.sh
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-container
+          path: build/FileOp.7z
+
+  windows-build:
+    needs:
+      - spell-check
+    runs-on: Windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ninja
+        run:
+          choco install ninja
+      - name: Install gcovr
+        run:
+          pip install gcovr==8.2
+      - name: Configure (Debug)
+        run:
+          ./scripts/cmake.configure.sh -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run:
+          ./scripts/cmake.build.sh
+      - name: Run test
+        run: |
+          ./scripts/run_test.sh
+      - name: Create coverage report
+        run: |
+          gcovr --filter src/ --exclude-noncode-lines build \
+            --txt coverage.txt \
+            --html-single-page --html-title $(git rev-parse HEAD) --html-details coverage.html
+          cat coverage.txt
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.*
+      - name: Configure (Release)
+        run:
+          ./scripts/cmake.configure.sh -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run:
+          ./scripts/cmake.build.sh
+      - name: Run test
+        run: |
+          ./scripts/run_test.sh
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-windows
+          path: build/FileOp.7z
+
+  deploy:
+    needs:
+      - container-build
+      - windows-build
+    runs-on: Windows-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: app-*
+      # cspell:ignore oapp
+      - name: Test container build
+        run: |
+          7z x -oapp-container app-container/FileOp.7z
+          ./app-container/FileOp.exe --help
+      - name: Test windows build
+        run: |
+          7z x -oapp-windows app-windows/FileOp.7z
+          ./app-windows/FileOp.exe --help
+
+

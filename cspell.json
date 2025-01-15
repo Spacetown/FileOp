@@ -4,21 +4,39 @@
         "/**"
     ],
     "ignorePaths": [
-        "/.git/"
+        "/.git/",
+        "src/mingw-unicode.c"
     ],
     "dictionaryDefinitions": [],
     "dictionaries": [],
     "enableGlobDot": true,
     "words": [
-        "devcontainers"
+        "choco",
+        "devcontainers",
+        "endfunction",
+        "fileop",
+        "gcov",
+        "gcovr",
+        "mklink",
+        "msys",
+        "noncode",
+        "venv",
+        "windres"
     ],
     "ignoreWords": [
         "noninteractive",
-        "seunlanlege"
+        "seunlanlege",
+        "WINXP"
     ],
     "ignoreRegExpList": [
         // GH actions
-        "uses: [^\\s]+/[^\\s]+@[^\\s]+"
+        "uses: [^\\s]+/[^\\s]+@[^\\s]+",
+        // CMAKE and GCC defines
+        "-DCMAKE[A-Z_]*",
+        "-DN?DEBUG",
+        // Functions
+        "tcs[a-z]+",
+        "[a-z]+printf"
     ],
     "import": []
 }

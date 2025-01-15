@@ -8,23 +8,38 @@
 		"actionButtons": {
 			"commands": [
 				{
-					"name": "Configure",
-					"command": "./scripts/cmake.configure.sh"
+					"name": "Configure (Profile)",
+					"command": "./scripts/cmake.configure.sh -DCMAKE_BUILD_TYPE=Profile"
+				},
+				{
+					"name": "Configure (Release)",
+					"command": "./scripts/cmake.configure.sh -DCMAKE_BUILD_TYPE=Release"
 				},
 				{
 					"name": "Build",
 					"command": "./scripts/cmake.build.sh"
+				},
+				{
+					"name": "Test",
+					"command": "./scripts/cmake.test.sh"
 				}
 			],
 			"defaultColor": "white",
 			"reloadButton": "↻",
 			"loadNpmCommands": false
-		}
+		},
+		"C_Cpp.clang_format_fallbackStyle": "LLVM",
+		"C_Cpp.formatting": "clangFormat",
+		"editor.formatOnSave": true
 	},
 	"extensions": {
+		// cspell:disable
 		"recommendations": [
 			"seunlanlege.action-buttons",
-			"streetsidesoftware.code-spell-checker"
+			"streetsidesoftware.code-spell-checker",
+			"EditorConfig.EditorConfig",
+			"ms-vscode.cpptools-extension-pack"
 		]
+		// cspell:enable
 	}
 }

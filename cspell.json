@@ -1,24 +1,47 @@
 {
-    "version": "0.2",
-    "files": [
-        "/**"
-    ],
-    "ignorePaths": [
-        "/.git/"
-    ],
-    "dictionaryDefinitions": [],
-    "dictionaries": [],
-    "enableGlobDot": true,
-    "words": [
-        "devcontainers"
-    ],
-    "ignoreWords": [
-        "noninteractive",
-        "seunlanlege"
-    ],
-    "ignoreRegExpList": [
-        // GH actions
-        "uses: [^\\s]+/[^\\s]+@[^\\s]+"
-    ],
-    "import": []
+   "version": "0.2",
+   "files": [
+      "/**"
+   ],
+   "ignorePaths": [
+      "/.git/",
+      "src/mingw-unicode.c"
+   ],
+   "dictionaryDefinitions": [],
+   "dictionaries": [],
+   "enableGlobDot": true,
+   "words": [
+      "choco",
+      "devcontainers",
+      "endgroup",
+      "fileop",
+      "gcov",
+      "gcovr",
+      "mklink",
+      "msys",
+      "noncode",
+      "STREQUAL",
+      "venv",
+      "windres"
+   ],
+   "ignoreWords": [
+      "noninteractive",
+      "seunlanlege",
+      "WINXP",
+      "endfunction",
+      "endforeach"
+   ],
+   "ignoreRegExpList": [
+      // GH actions
+      "uses: [^\\s]+/[^\\s]+@[^\\s]+",
+      // Options
+      "--[a-z0-9-]+",
+      // CMAKE and GCC defines
+      "-DCMAKE[A-Z_]*",
+      "-DN?DEBUG",
+      // Functions
+      "tcs[a-z]+",
+      "[a-z]+printf"
+   ],
+   "import": []
 }

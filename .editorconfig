@@ -1,0 +1,14 @@
+# top-most EditorConfig file
+root = true
+
+[*]
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+tab_width = 3
+
+[{*.sh,dockcross,docker-wine}]
+end_of_line = lf
+
+[*.{c,h,yml}]
+tab_width = 3

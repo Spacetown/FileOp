@@ -8,23 +8,45 @@
 		"actionButtons": {
 			"commands": [
 				{
-					"name": "Configure",
-					"command": "./scripts/cmake.configure.sh"
+					"name": "Setup env",
+					"command": "docker run --rm --platform linux/amd64 dockcross/windows-static-x64 > ./dockcross && chmod +x ./dockcross",
+					"singleInstance": true
+				},
+				{
+					"name": "Configure (Profile)",
+					"command": "./dockcross --args '--platform linux/amd64' bash -c './scripts/cmake.configure.sh -DCMAKE_BUILD_TYPE=Profile'",
+					"singleInstance": true
+				},
+				{
+					"name": "Configure (Release)",
+					"command": "./dockcross --args '--platform linux/amd64' bash -c './scripts/cmake.configure.sh -DCMAKE_BUILD_TYPE=Release'",
+					"singleInstance": true
 				},
 				{
 					"name": "Build",
-					"command": "./scripts/cmake.build.sh"
+					"command": "./dockcross --args '--platform linux/amd64' bash -c './scripts/cmake.build.sh'",
+					"singleInstance": true
+				},
+				{
+					"name": "Test",
+					"command": "./dockcross --args '--platform linux/amd64' bash -c './scripts/cmake.test.sh'",
+					"singleInstance": true
 				}
 			],
 			"defaultColor": "white",
 			"reloadButton": "↻",
 			"loadNpmCommands": false
-		}
+		},
+		"editor.formatOnSave": true
 	},
 	"extensions": {
+		// cspell:disable
 		"recommendations": [
 			"seunlanlege.action-buttons",
-			"streetsidesoftware.code-spell-checker"
+			"streetsidesoftware.code-spell-checker",
+			"EditorConfig.EditorConfig",
+			"ms-vscode.cpptools-extension-pack"
 		]
+		// cspell:enable
 	}
 }

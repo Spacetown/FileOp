@@ -8,12 +8,20 @@
 		"actionButtons": {
 			"commands": [
 				{
-					"name": "Configure",
-					"command": "./scripts/cmake.configure.sh"
+					"name": "Configure (Profile)",
+					"command": "./scripts/cmake.configure.sh -DCMAKE_BUILD_TYPE=Profile"
+				},
+				{
+					"name": "Configure (Release)",
+					"command": "./scripts/cmake.configure.sh -DCMAKE_BUILD_TYPE=Release"
 				},
 				{
 					"name": "Build",
 					"command": "./scripts/cmake.build.sh"
+				},
+				{
+					"name": "Test",
+					"command": "./scripts/cmake.test.sh"
 				}
 			],
 			"defaultColor": "white",

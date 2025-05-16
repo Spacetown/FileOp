@@ -150,10 +150,10 @@ test_fileop_check_filesystem(
 )
 
 test_fileop_check_filesystem(
-   NAME MoveFileExistingTargetDashDash
-   DEPENDS MoveFileExistingTarget
-   PREPARE_COMMAND sh -c "touch -- --target && chmod -R oga-w -- --target MoveFileToDirectory/dir/--target"
-   ARGS move --force -- --target MoveFileToDirectory/dir/
-   MUST_NOT_EXIST --target
-   MUST_EXIST MoveFileToDirectory/dir/--target
+   NAME MoveDirectoryRecursive
+   DEPENDS MoveFileExistingTargetForce
+   PREPARE_COMMAND sh -c "mkdir -p MoveFileToDirectory/Target/dir && chmod -R oga-w MoveFileToDirectory"
+   ARGS --debug move --force --touch --time 2003-01-01 --target-directory MoveFileToDirectory/Target MoveFileToDirectory/dir
+   MUST_EXIST MoveFileToDirectory/Target/dir/--target
+   MUST_NOT_EXIST MoveFileToDirectory/dir
 )

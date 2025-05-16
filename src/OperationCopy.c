@@ -75,7 +75,7 @@ static tResult copyOperation(void) {
             hFind = FindFirstFile(DosDevicePath, &FindFileData);
             // GCOVR_EXCL_START
             if (hFind == INVALID_HANDLE_VALUE) {
-               result = printLastError(_T("Got invalid handle for %s"), getReadableFilename(DosDevicePath));
+               result &= printLastError(_T("Got invalid handle for %s"), getReadableFilename(DosDevicePath));
             }
             // GCOVR_EXCL_STOP
             else {
@@ -93,14 +93,16 @@ static tResult copyOperation(void) {
                if (result == eOk) {
                   // GCOVR_EXCL_START
                   if (GetLastError() != ERROR_NO_MORE_FILES) {
-                     result = printLastError(_T("Can't get next file"));
+                     result &= printLastError(_T("Can't get next file"));
                   }
                   // GCOVR_EXCL_STOP
                }
 
                StartOfSourceName[-1] = _T('\0');
                // close handle to file
-               FindClose(hFind);
+               if (!FindClose(hFind)) {
+                  result &= printLastError(_T("Can't close file search handle."));
+               }
             }
          }
       } else {

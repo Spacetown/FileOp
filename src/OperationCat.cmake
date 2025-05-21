@@ -11,15 +11,15 @@ test_fileop_check_filesystem(
 
 test_fileop_check_filesystem(
    NAME CatFileLeadingDashDash
-   DEPENDS TouchFileLeadingDashDash
+   PREPARE_COMMAND sh -c "echo 'File content of --xxx' > --xxx"
    ARGS --debug cat -- --xxx
-   PASS_REGULAR_EXPRESSION "-- detected, stop option parsing."
+   PASS_REGULAR_EXPRESSION "-- detected, stop option parsing." "^File content of --xxx$"
 )
 
 test_fileop_check_filesystem(
    NAME CatDirectory
-   ARGS cat ${CMAKE_CURRENT_LIST_DIR}
+   ARGS cat .
    WILL_FAIL
-   FAIL_REGULAR_EXPRESSION "FileOp.exe: error: Only files can be printed. Got directory [A-Z]:\\\\.*\\\\src"
+   FAIL_REGULAR_EXPRESSION "FileOp.exe: error: Only files can be printed. Got directory [A-Z]:\\\\.*\\\\CatDirectory"
 )
 

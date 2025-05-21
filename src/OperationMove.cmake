@@ -43,7 +43,7 @@ test_fileop_check_filesystem(
 
 test_fileop_check_filesystem(
    NAME MoveFileWithTargetDirectory
-   PREPARE_COMMAND sh -c "cp -f ${CMAKE_CURRENT_LIST_FILE} . && mkdir SubDir"
+   PREPARE_COMMAND "cp -f ${CMAKE_CURRENT_LIST_FILE} . && mkdir SubDir"
    ARGS move --target-directory=SubDir OperationMove.cmake
    MUST_NOT_EXIST OperationMove.cmake
    MUST_EXIST SubDir/OperationMove.cmake
@@ -61,7 +61,7 @@ test_fileop_check_filesystem(
 test_fileop_check_filesystem(
    NAME MoveFileWithTargetDirectoryUniqueNames
    DEPENDS MoveFileWithTargetDirectoryForce
-   PREPARE_COMMAND sh -c "cp -f ${CMAKE_CURRENT_LIST_FILE} . && mkdir SubDir1"
+   PREPARE_COMMAND "cp -f ${CMAKE_CURRENT_LIST_FILE} . && mkdir SubDir1"
    ARGS move --check-unique-names --target-directory SubDir1 SubDir/OperationMove.cmake OperationMove.cmake
    WILL_FAIL
    FAIL_REGULAR_EXPRESSION "FileOp\\.exe: error: File in source list will overwrite each other: OperationMove.cmake"
@@ -79,7 +79,7 @@ test_fileop_check_filesystem(
 
 test_fileop_check_filesystem(
    NAME MoveFileListWithPattern
-   PREPARE_COMMAND sh -c "mkdir -p MoveFileListWithPattern MoveFileListWithPatternTarget && cp -f ${CMAKE_CURRENT_LIST_DIR}/Ope*Move.* MoveFileListWithPattern/"
+   PREPARE_COMMAND "mkdir -p MoveFileListWithPattern MoveFileListWithPatternTarget && cp -f ${CMAKE_CURRENT_LIST_DIR}/Ope*Move.* MoveFileListWithPattern/"
    ARGS move --touch --time=2001-01-01T00:30 MoveFileListWithPattern/OperationMove.* MoveFileListWithPatternTarget/
    MUST_EXIST MoveFileListWithPatternTarget/OperationMove.cmake MoveFileListWithPatternTarget/OperationMove.c
    MUST_NOT_EXIST MoveFileListWithPattern/OperationMove.cmake MoveFileListWithPattern/OperationMove.c
@@ -89,7 +89,7 @@ test_fileop_check_filesystem(
 test_fileop_check_filesystem(
    NAME MoveFileListWithPatternExisting
    DEPENDS MoveFileListWithPattern
-   PREPARE_COMMAND sh -c "cp -f MoveFileListWithPatternTarget/*.* MoveFileListWithPattern/ && chmod -R oga-w MoveFileListWithPatternTarget"
+   PREPARE_COMMAND "cp -f MoveFileListWithPatternTarget/*.* MoveFileListWithPattern/ && chmod -R oga-w MoveFileListWithPatternTarget"
    ARGS move --touch --time=2002-01-01T00:30 MoveFileListWithPattern/OperationMove.* MoveFileListWithPatternTarget/
    WILL_FAIL
    MUST_EXIST MoveFileListWithPattern/OperationMove.cmake MoveFileListWithPattern/OperationMove.c
@@ -152,7 +152,7 @@ test_fileop_check_filesystem(
 test_fileop_check_filesystem(
    NAME MoveDirectoryRecursive
    DEPENDS MoveFileExistingTargetForce
-   PREPARE_COMMAND sh -c "mkdir -p MoveFileToDirectory/Target/dir && chmod -R oga-w MoveFileToDirectory"
+   PREPARE_COMMAND "mkdir -p MoveFileToDirectory/Target/dir && chmod -R oga-w MoveFileToDirectory"
    ARGS --debug move --force --touch --time 2003-01-01 --target-directory MoveFileToDirectory/Target MoveFileToDirectory/dir
    MUST_EXIST MoveFileToDirectory/Target/dir/--target
    MUST_NOT_EXIST MoveFileToDirectory/dir
